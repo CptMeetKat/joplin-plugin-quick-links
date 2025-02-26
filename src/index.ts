@@ -5,10 +5,12 @@ const NUM_RESULTS = 21;
 const FOLDERS_REFRESH_INTERVAL = 60000;
 const SETTING_SHOW_FOLDERS = 'showFolders';
 const SETTING_ALLOW_NEW_NOTES = 'allowNewNotes';
+const SETTING_SHOW_NEW_NOTES_FIRST = 'showNotesFirst';
 const SETTING_SELECT_TEXT = 'selectText';
 
 let showFolders = false;
 let allowNewNotes = false;
+let showNotesFirst = false;
 let selectText = false;
 let folders = {};
 
@@ -21,6 +23,10 @@ async function onShowFolderSettingChanged() {
 
 async function onAllowNewNotesSettingChanged() {
 	allowNewNotes = await joplin.settings.value(SETTING_ALLOW_NEW_NOTES);
+}
+
+async function onShowNotesFirstSettingChanged() {
+	showNotesFirst = await joplin.settings.value(SETTING_SHOW_NEW_NOTES_FIRST);
 }
 
 async function onSelectTextSettingChanged() {
@@ -92,6 +98,13 @@ async function initSettings() {
 			value: allowNewNotes,
 			label: 'Allow new notes',
 		},
+		[SETTING_SHOW_NEW_NOTES_FIRST]: {
+			public: true,
+			section: SECTION,
+			type: SettingItemType.Bool,
+			value: showNotesFirst,
+			label: 'Show \'New Note\' before \'New Task\'',
+		},
 		[SETTING_SELECT_TEXT]: {
 			public: true,
 			section: SECTION,
@@ -105,6 +118,7 @@ async function initSettings() {
 
 	await onAllowNewNotesSettingChanged();
 	await onAllowNewNotesSettingChanged();
+    await onShowNotesFirstSettingChanged();
 	await onSelectTextSettingChanged();
 
 	await joplin.settings.onChange(change => {
@@ -115,6 +129,10 @@ async function initSettings() {
 		const allowNewNotesIdx = change.keys.indexOf(SETTING_ALLOW_NEW_NOTES);
 		if (allowNewNotesIdx >= 0) {
 			onAllowNewNotesSettingChanged();
+		}
+		const newNotesIdx = change.keys.indexOf(SETTING_SHOW_NEW_NOTES_FIRST);
+		if (newNotesIdx >= 0) {
+			onShowNotesFirstSettingChanged();
 		}
 		const selectTextIdx = change.keys.indexOf(SETTING_SELECT_TEXT);
 		if (selectTextIdx >= 0) {
@@ -150,6 +168,7 @@ joplin.plugins.register({
 					notes: res,
 					showFolders: showFolders,
 					allowNewNotes: allowNewNotes,
+					showNotesFirst: showNotesFirst,
 					selectText: selectText
 				};
 			}

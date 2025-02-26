@@ -84,9 +84,15 @@ export default function codeMirror6Plugin(pluginContext: PluginContext, CodeMirr
 			});
 		};
 
-		if (response.allowNewNotes && searchText.length > 0) {
-			addNewNoteCompletion(true);
-			addNewNoteCompletion(false);
+		if (response.allowNewNotes && searchText.length > 0 ) {
+            if(response.showNotesFirst) {
+                addNewNoteCompletion(false);
+                addNewNoteCompletion(true);
+            }
+            else {
+                addNewNoteCompletion(true);
+                addNewNoteCompletion(false);
+            }
 		}
 
 		return {
